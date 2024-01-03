@@ -1,14 +1,17 @@
 <!-- Based on: https://svelte.dev/examples/area-chart. -->
 <script>
 	import { scaleLinear } from 'd3-scale';
-	import points from './data.js';
+    export let dataPoints;
 
-	const yTicks = [0, 2, 4, 6, 8];
-	const xTicks = [1980, 1990, 2000, 2010];
+	const yTicks = [0, 20, 40, 60, 80, 100];
+	$: xTicks = [0, dataPoints.length-1];
 	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
 
 	let width = 1000;
 	let height = 600;
+
+    $: minX = 0;
+	$: maxX = dataPoints.length-1;
 
 	$: xScale = scaleLinear()
 		.domain([minX, maxX])
@@ -18,9 +21,7 @@
 		.domain([Math.min.apply(null, yTicks), Math.max.apply(null, yTicks)])
 		.range([height - padding.bottom, padding.top]);
 
-	$: minX = points[0].x;
-	$: maxX = points[points.length - 1].x;
-	$: path = `M${points.map((p) => `${xScale(p.x)},${yScale(p.y)}`).join('L')}`;
+	$: path = `M${dataPoints.map((p, i) => `${xScale(i)},${yScale(p)}`).join('L')}`;
 	$: area = `${path}L${xScale(maxX)},${yScale(0)}L${xScale(minX)},${yScale(0)}Z`;
 
 	function formatMobile(tick) {

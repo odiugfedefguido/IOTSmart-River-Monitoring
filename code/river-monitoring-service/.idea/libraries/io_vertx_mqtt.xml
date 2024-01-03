@@ -1,0 +1,44 @@
+<component name="libraryTable">
+  <library name="io.vertx.mqtt" type="repository">
+    <properties maven-id="io.vertx:vertx-mqtt:4.5.1" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/vertx-mqtt-4.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-common-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-transport-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-buffer-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-resolver-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-handler-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-transport-native-unix-common-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-mqtt-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/vertx-core-4.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-handler-proxy-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-socks-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-http-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-http2-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-resolver-dns-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-dns-4.1.103.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-core-2.15.3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/vertx-mqtt-4.5.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-common-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-transport-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-buffer-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-resolver-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-handler-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-transport-native-unix-common-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-mqtt-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/vertx-core-4.5.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-handler-proxy-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-socks-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-http-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-http2-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-resolver-dns-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-dns-4.1.103.Final-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-core-2.15.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>
