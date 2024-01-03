@@ -1,0 +1,21 @@
+@import '@fontsource/figtree';
+
+html {
+    font-family: 'Figtree', serif;
+    color: white;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background-color: #020202;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+}
