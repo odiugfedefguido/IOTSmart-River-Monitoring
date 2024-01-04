@@ -1,0 +1,13 @@
+ARDUINO
+led verde pin 7
+led rosso pin 8
+potenziometro in A0
+servo pin 3
+lcd SDA => A4, SCL => A5
+
+
+ESP
+sonar: gnd gnd; echo d2; trig d4; vcc 3v3
+led verde d21
+led rosso d19
+bottono d18
