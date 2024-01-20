@@ -3,9 +3,9 @@
 #include "components/actuators/ServoMotor.h"
 #include "components/actuators/Display.h"
 
-/*
 
-TaskManual::TaskManual(Potentiometer& potentiometer, ServoMotor& servoMotor, Display& display)
+
+TaskManual::TaskManual(SystemState activeState, Potentiometer& potentiometer, ServoMotor& servoMotor, Display& display)
     : Task(MANUAL), potentiometer(potentiometer), servoMotor(servoMotor), display(display){
   // Inizializzazioni, se necessario
 }
@@ -18,13 +18,12 @@ void TaskManual::tick() {
   // Implementazione delle operazioni da eseguire ad ogni iterazione
 
   // Esempio: Leggi il valore dal potenziometro
-  int potValue = potentiometer.readValue();
+  int potValue = potentiometer.read();
 
   //// Esempio: Aggiorna la posizione del motore servo in base al valore del potenziometro
   //int servoPosition = map(potValue, 0, 1023, 0, 180);
   //servoMotor.setPosition(servoPosition);
 
   // Esempio: Aggiorna il display con il valore del potenziometro
-  display.showValue(potValue);
+  display.showText(potValue);
 }
-*/

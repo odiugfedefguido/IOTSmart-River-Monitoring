@@ -24,12 +24,14 @@
 #define LED_RED_PIN 8
 #define LED_GREEN_PIN 7
 #define SERVO_PIN 3
+#define POT_PIN A0
 
 Display display;
 Button button(BUTTON_PIN);
 ServoMotor servo(SERVO_PIN);
 Led ledGreen(LED_GREEN_PIN);
 Led ledRed(LED_RED_PIN);
+Potentiometer potentiometer(POT_PIN);
 
 Scheduler scheduler;
 
@@ -46,9 +48,9 @@ ledGreen.setup();
   display.showText(MSG_INIT);
 
   // TODO: Add tasks.
- /* Task *taskManual = new TaskManual();
+  Task *taskManual = new TaskManual(MANUAL, potentiometer, servo, display);
 taskManual->init(1000);
-  scheduler.addTask(taskManual); */
+  scheduler.addTask(taskManual);
 
   // TaskAutomatic taskAutomatic(&potentiometer, &servoMotor, &display);
 }
