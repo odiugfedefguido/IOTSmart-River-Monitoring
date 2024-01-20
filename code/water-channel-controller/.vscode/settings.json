@@ -1,0 +1,6 @@
+{
+    "C_Cpp.errorSquiggles": "enabled",
+    "editor.wordWrap": "off",
+    "problems.showCurrentInStatus": false,
+    "C_Cpp.dimInactiveRegions": false
+}

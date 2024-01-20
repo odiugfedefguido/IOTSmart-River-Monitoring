@@ -19,6 +19,7 @@ void Display::showText(Message message)
   lcd.clear();
   lcd.backlight();
 
+
   switch (message)
   {
     case MSG_INIT:
@@ -27,13 +28,21 @@ void Display::showText(Message message)
       break;
     case MSG_MANUAL:
       lcd.setCursor(4, 0);
-      lcd.print("Manual");
+      lcd.print("Manual ");
       break;
     case MSG_AUTOMATIC:
       lcd.setCursor(1, 0);
       lcd.print("Automatic");
       break;
   }
+}
+
+void Display::showText(int percentual) 
+{
+  lcd.clear();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print(percentual);
 }
 
 void Display::turnOff() {

@@ -11,11 +11,14 @@
 #include "components/actuators/Display.h"
 #include "components/actuators/ServoMotor.h"
 #include "components/actuators/Led.h"
+#include "components/actuators/Potentiometer.h"
 
 #include "core/Scheduler.h"
 #include "core/StateMachine.h"
 
 #include "serial/MsgService.h"
+
+#include "tasks/TaskManual.h"
 
 #define BUTTON_PIN 4
 #define LED_RED_PIN 8
@@ -35,7 +38,7 @@ void setup() {
   scheduler.init(10); // base period
   MsgService.init();
 
-  ledGreen.setup();
+ledGreen.setup();
   ledRed.setup();
 
   servo.setup();
@@ -43,6 +46,11 @@ void setup() {
   display.showText(MSG_INIT);
 
   // TODO: Add tasks.
+ /* Task *taskManual = new TaskManual();
+taskManual->init(1000);
+  scheduler.addTask(taskManual); */
+
+  // TaskAutomatic taskAutomatic(&potentiometer, &servoMotor, &display);
 }
 
 void loop() {

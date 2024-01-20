@@ -15,6 +15,7 @@ public:
   void showText(Message message);
   void setup();
   void turnOff();
+  void showText(int percentual);
 };
 
 #endif
