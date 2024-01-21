@@ -5,6 +5,8 @@
 #include "Arduino.h"
 #include "../serial/MsgService.h"
 
+#define ALWAYS 255
+
 class Task {
 
 public:

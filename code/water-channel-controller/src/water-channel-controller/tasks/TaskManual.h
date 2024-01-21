@@ -1,8 +1,9 @@
 #include "Task.h"
 
-#include "../../src/components/actuators/Potentiometer.h"
-#include "../../src/components/actuators/ServoMotor.h"
-#include "../../src/components/actuators/Display.h"
+#include "../components/actuators/ServoMotor.h"
+#include "../components/actuators/Potentiometer.h"
+#include "../components/actuators/Display.h"
+
 
 
 

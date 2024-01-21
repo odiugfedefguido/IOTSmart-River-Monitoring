@@ -26,6 +26,11 @@
 #define SERVO_PIN 3
 #define POT_PIN A0
 
+
+Scheduler scheduler;
+
+void debug();
+
 Display display;
 Button button(BUTTON_PIN);
 ServoMotor servo(SERVO_PIN);
@@ -33,7 +38,7 @@ Led ledGreen(LED_GREEN_PIN);
 Led ledRed(LED_RED_PIN);
 Potentiometer potentiometer(POT_PIN);
 
-Scheduler scheduler;
+
 
 void setup() {
   Serial.begin(9600);
