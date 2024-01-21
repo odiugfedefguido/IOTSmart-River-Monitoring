@@ -1,9 +1,10 @@
 #include <LiquidCrystal_I2C.h>
 #include <Servo.h>
 
+#define PIN_POT A0
 Servo myServo; //dichiarazione dell'oggetto servo
 
-const int potPin = A0;  // Il pin analogico a cui è collegato il potenziometro
+
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27,20,4);
 
@@ -22,22 +23,54 @@ void setup() {
 }
 
 void loop() {
-  int valorePotenziometro = analogRead(potPin);  // Leggi il valore del potenziometro
+  
+  int n = PerPot(); //percentuale di apertura
+  
+  SetLCD();
+  PrintLCD(n);  
+  MoveServo(n);
+
+  // Aggiorna ogni 500 millisecondi
+  delay(500);
+}
+
+//ritorna il valore del potenziometro
+int PotValue(){
+  int valorePotenziometro = analogRead(PIN_POT);  // Leggi il valore del potenziometro
 
   // Stampa il valore sulla porta seriale
   Serial.print("Valore Potenziometro: ");
   Serial.println(valorePotenziometro);
+  return valorePotenziometro;
+}
 
-  int percentuale = valorePotenziometro/10;
-  Serial.println(percentuale);
+//ritorna il valore del potenziometro in percentuale
+int PerPot(){
+
+  Serial.println(PotValue()/10);
+  return PotValue()/10;
+
+
+}
+
+//setta in display LCD
+void SetLCD(){
+  
   //lcd
   lcd.setCursor(2, 1); // Set the cursor on the third column and first row.
+}
+
+//Stampa sul display LCD
+void PrintLCD(int percentuale){
   // Pulisci il display
   lcd.clear();
   lcd.print(percentuale); //stampa il valore del potenziometro nell'lcd
-  //valore potenziometro da 0 a 100+
+}
+
+//muovo il servo in base alla percentuale
+void MoveServo(int percentuale){
   
-   // Assicurati che l'angolo sia compreso tra 0 e 180
+  // Assicurati che l'angolo sia compreso tra 0 e 180
   percentuale = constrain(percentuale, 0, 180);
 
   // Muovi il servo all'angolo desiderato
@@ -46,7 +79,4 @@ void loop() {
   // Puoi anche stampare il valore su seriale a scopo di debug
   Serial.print("Servo Angolo: ");
   Serial.println(percentuale);
-
-  // Aggiorna ogni 500 millisecondi
-  delay(500);
 }
