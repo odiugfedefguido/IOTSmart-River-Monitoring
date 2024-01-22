@@ -1,4 +1,4 @@
-/*#ifndef DISPLAY_H
+#ifndef DISPLAY_H
 #define DISPLAY_H
 
 
@@ -21,4 +21,4 @@ private:
   int displayValue;
 };
 
-#endif  // DISPLAY_H */
+#endif  // DISPLAY_H 
