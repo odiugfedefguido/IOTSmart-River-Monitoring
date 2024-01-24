@@ -3,8 +3,8 @@
 #include <PubSubClient.h>
 
 //tuo wifi da hotspot
-const char *ssid = "Redmi Note 11 Pro 5G";
-const char *password = "chiarayee";
+const char *ssid = "tuo nome wifi";
+const char *password = "tua pw";
 
 //mqtt di un server web
 const char *mqttServer = "broker.hivemq.com";
