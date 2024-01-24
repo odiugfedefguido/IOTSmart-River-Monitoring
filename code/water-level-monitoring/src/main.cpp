@@ -130,42 +130,42 @@ void loop() {
     double distance = sonar();
     Serial.println("Normal state");
 
-  if (reconnectMQTT() && sendDataToRiver(distance)) {
-      // La connessione di rete è attiva e i dati sono stati inviati correttamente
-      digitalWrite(ledPinG, HIGH);
-      digitalWrite(ledPinR, LOW);
+      if (reconnectMQTT() && sendDataToRiver(distance)) {
+          // La connessione di rete è attiva e i dati sono stati inviati correttamente
+          digitalWrite(ledPinG, HIGH);
+          digitalWrite(ledPinR, LOW);
 
-      // Invia dati solo se sono trascorsi almeno F1 secondi dall'ultimo invio
-      sendDataToRiver(distance);
-      Serial.println("message sent");
-      delay(F1); //invia i dati con una frequenza f1
-    }else{
-      // Problemi di connessione o invio dati2
-      Serial.println("problema rilevato");
-      digitalWrite(ledPinG, LOW);
-      digitalWrite(ledPinR, HIGH);
-      delay(1000);
-    }
+          // Invia dati solo se sono trascorsi almeno F1 secondi dall'ultimo invio
+          sendDataToRiver(distance);
+          Serial.println("message sent");
+          delay(F1); //invia i dati con una frequenza f1
+        }else{
+          // Problemi di connessione o invio dati2
+          Serial.println("problema rilevato");
+          digitalWrite(ledPinG, LOW);
+          digitalWrite(ledPinR, HIGH);
+          delay(1000);
+        }
   } else if(currentState == ALARM_TOO_LOW || currentState == PRE_ALARM_TOO_HIGH ||
               currentState == ALARM_TOO_HIGH || currentState == ALARM_TOO_HIGH_CRITIC) {
     double distance = sonar();
     Serial.println("not normal state");
 
-    if (reconnectMQTT() && sendDataToRiver(distance)) {
-      // La connessione di rete è attiva e i dati sono stati inviati correttamente
-      digitalWrite(ledPinG, HIGH);
-      digitalWrite(ledPinR, LOW);
+      if (reconnectMQTT() && sendDataToRiver(distance)) {
+        // La connessione di rete è attiva e i dati sono stati inviati correttamente
+        digitalWrite(ledPinG, HIGH);
+        digitalWrite(ledPinR, LOW);
 
-      // Invia dati solo se sono trascorsi almeno F1 secondi dall'ultimo invio
-      sendDataToRiver(distance);
-      Serial.println("message sent");
-      delay(F2); //invia i dati con una frequenza f2
-  }else{
-      // Problemi di connessione o invio dati
-      Serial.println("problema rilevato");
-      digitalWrite(ledPinG, LOW);
-      digitalWrite(ledPinR, HIGH);
-      delay(1000);
-    }
-}
+        // Invia dati solo se sono trascorsi almeno F1 secondi dall'ultimo invio
+        sendDataToRiver(distance);
+        Serial.println("message sent");
+        delay(F2); //invia i dati con una frequenza f2
+    }else{
+        // Problemi di connessione o invio dati
+        Serial.println("problema rilevato");
+        digitalWrite(ledPinG, LOW);
+        digitalWrite(ledPinR, HIGH);
+        delay(1000);
+      }
+  }
 }
