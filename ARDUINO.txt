@@ -10,4 +10,3 @@ ESP
 sonar: gnd gnd; echo d13; trig d12; vcc 3v3
 led verde d27
 led rosso d25
-bottono d26
