@@ -1,14 +1,14 @@
 #include "ManualTask.h"
 #include "Arduino.h"
 
-TaskControl::TaskControl(ServoMotor &servo, Display &display, Potentiometer &potentiometer)
+TaskManual::TaskManual(ServoMotor &servo, Display &display, Potentiometer &potentiometer)
     : Task(MANUAL_STATE), myServo(servo), myDisplay(display), myPotentiometer(potentiometer) {}
 
-void TaskControl::init(int period) {
+void TaskManual::init(int period) {
     Task::init(period);
 }
 
-void TaskControl::tick() {
+void TaskManual::tick() {
 
     // Leggi il valore del potenziometro
     int potValue = myPotentiometer.perPot();

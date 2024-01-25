@@ -2,23 +2,27 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "SystemState.h"  // Includi la definizione di SystemState
 #include "Arduino.h"
+
+enum SystemState {
+    AUTOMATIC,
+    MANUAL
+    // Aggiungi altri stati se necessario
+};
 
 class Task {
 public:
     Task(SystemState activeState);
     virtual void init(int period);
+    virtual void init();
     virtual void tick() = 0;
-
     bool updateAndCheckTime(int basePeriod);
     void setCompleted();
     bool isCompleted();
     bool isPeriodic();
     bool isActive();
     virtual void setActive(bool active);
-
-protected:
+    
     SystemState activeState;
 
 private:

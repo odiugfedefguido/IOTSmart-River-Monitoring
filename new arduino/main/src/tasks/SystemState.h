@@ -2,11 +2,10 @@
 #ifndef SYSTEM_STATE_H
 #define SYSTEM_STATE_H
 
-// Definizione degli stati del sistema
-enum SystemState {
-    MANUAL_STATE,
+enum class SystemState {
     AUTOMATIC_STATE,
-    // Aggiungi altri stati se necessario
+    MANUAL_STATE
+    
 };
 
 #endif  // SYSTEM_STATE_H
