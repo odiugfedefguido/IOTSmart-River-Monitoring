@@ -17,7 +17,6 @@ Display display;
 void setup() {
   Serial.begin(9600);
   display.set();
-  //servo.setup();
   servo.attach();
 }
 
