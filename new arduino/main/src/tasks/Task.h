@@ -3,12 +3,7 @@
 #define TASK_H
 
 #include "Arduino.h"
-
-enum SystemState {
-    AUTOMATIC,
-    MANUAL
-    // Aggiungi altri stati se necessario
-};
+#include "SystemState.h"
 
 class Task {
 public:

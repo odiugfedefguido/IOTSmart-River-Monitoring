@@ -1,8 +1,9 @@
 #include "ManualTask.h"
 #include "Arduino.h"
+#include "SystemState.h"
 
 TaskManual::TaskManual(ServoMotor &servo, Display &display, Potentiometer &potentiometer)
-    : Task(MANUAL_STATE), myServo(servo), myDisplay(display), myPotentiometer(potentiometer) {}
+    : Task(SystemState::MANUAL_STATE), myServo(servo), myDisplay(display), myPotentiometer(potentiometer) {}
 
 void TaskManual::init(int period) {
     Task::init(period);
