@@ -1,18 +1,18 @@
-/*#ifndef SERVO_MOTOR_H
+#ifndef SERVO_MOTOR_H
 #define SERVO_MOTOR_H
 
-#include "main/lib/ServoTimer2.h"
+#include <Servo.h>
 
-class ServoMotor
-{
+class ServoMotor {
 public:
-  ServoMotor(int pin);
-  void setup();
+    ServoMotor(int pin);
+    void attach();
+    void write(int angle);
+    void detach();
 
-    void MoveServo(int percentuale);
-
-private: 
-  int GATE_PIN;
+private:
+    int servoPin;
+    Servo myServo;
 };
 
-#endif */
+#endif  // SERVO_MOTOR_H

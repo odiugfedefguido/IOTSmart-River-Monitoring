@@ -17,11 +17,20 @@ int Potentiometer::read()
 
 int Potentiometer::perPot() //converte il valore del potenziometro in percentuale
 {
+  if(read() > 1000)
+  {
+    return 100;
+  }
+  else if(read() < 0)
+  {
+    return 0;
+  }
+  else
   return read()/10;
   
 }
 
 void Potentiometer::print() //stampa il valore del potenziometro in percentuale
 {
-  Serial.println(perPot());
+  //Serial.println(perPot());
 }
