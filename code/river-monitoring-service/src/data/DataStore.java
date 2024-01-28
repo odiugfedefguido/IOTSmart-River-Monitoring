@@ -14,24 +14,16 @@ public class DataStore {
     // protects against coinciding accesses
     private static final Object lock = new Object();
 
-    // how many items are preserved in the history
-    private final int MAX_HISTORY_CAPACITY = 100;
-
     // the data to be stored
     private ControlState controlState = ControlState.MANUAL;
     private ValveState valveState = ValveState.NORMAL;
     private int valveAngle = 120;
-    private Deque<Double> history = new LinkedList<>();
+    private final Deque<Double> history = new LinkedList<>();
 
     private final Random random = new Random();
 
     private DataStore() {
         // Singleton.
-
-        // FIXME: Remove as soon as there is actual data.
-        for (int i = 0; i < MAX_HISTORY_CAPACITY; i++) {
-            addDataPoint(random.nextDouble(100));
-        }
     }
 
     public static DataStore getInstance() {
@@ -45,6 +37,8 @@ public class DataStore {
         synchronized (lock) {
             history.addLast(datapoint);
 
+            // how many items are preserved in the history
+            int MAX_HISTORY_CAPACITY = 100;
             if (history.size() > MAX_HISTORY_CAPACITY) {
                 history.removeFirst();
             }
@@ -82,7 +76,7 @@ public class DataStore {
             data.put("valveAngle", valveAngle);
             data.put("history", dataPoints);
 
-            addDataPoint(random.nextDouble(100));
+            // addDataPoint(random.nextDouble(100));
             return data;
         }
     }

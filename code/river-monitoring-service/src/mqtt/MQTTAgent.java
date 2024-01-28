@@ -1,22 +1,12 @@
 package mqtt;
 
+import data.DataStore;
+import data.Frequency;
+import data.ValveState;
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.mqtt.MqttClient;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 /*
  * MQTT Agent
@@ -24,39 +14,77 @@ import java.util.Map;
 public class MQTTAgent extends AbstractVerticle {
 
     private static final String BROKER_ADDRESS = "broker.mqtt-dashboard.com";
-    private static final String TOPIC_NAME = "esiot-2023-smart-river-monitoring";
+    private static final String WATER_LEVEL_TOPIC = "esiot-2023-smart-river-monitoring-45983";
+    private static final String FREQUENCY_TOPIC = "esiot-2023-smart-river-monitoring-58329";
+
+    private MqttClient client;
+
+    private final double WL1 = 50;
+    private final double WL2 = 30;
+    private final double WL3 = 20;
+    private final double WL4 = 10;
+
+    private final int ANGLE_0_PERCENT = 0;
+    private final int ANGLE_25_PERCENT = 45;
+    private final int ANGLE_50_PERCENT = 90;
+    private final int ANGLE_100_PERCENT = 180;
+
 
     public MQTTAgent() {
     }
 
     @Override
     public void start() {
-        MqttClient client = MqttClient.create(vertx);
+        client = MqttClient.create(vertx);
 
         client.connect(1883, BROKER_ADDRESS, c -> {
 
-            log("connected");
+            System.out.println("[MQTT AGENT] connected");
+            System.out.println("[MQTT AGENT] subscribing …");
 
-            log("subscribing...");
+            DataStore dataStore = DataStore.getInstance();
+
             client.publishHandler(s -> {
                         System.out.println("There are new message in topic: " + s.topicName());
-                        System.out.println("Content(as string) of the message: " + s.payload().toString());
-                        System.out.println("QoS: " + s.qosLevel());
-                    })
-                    .subscribe(TOPIC_NAME, 2);
+                        System.out.println("Content (as string) of the message: " + s.payload().toString());
 
-            log("publishing a msg");
-            client.publish(TOPIC_NAME,
-                    Buffer.buffer("hello"),
-                    MqttQoS.AT_LEAST_ONCE,
-                    false,
-                    false);
+                        double waterLevel = Double.parseDouble(s.payload().toString());
+                        System.out.println("Content (as double) of the message: " + waterLevel);
+                        dataStore.addDataPoint(waterLevel);
+
+                        if (waterLevel > WL1) {
+                            dataStore.setValveState(ValveState.ALARM_TOO_LOW);
+                            dataStore.setValveAngle(ANGLE_0_PERCENT);
+                            sendFrequencyToESP(Frequency.F1);
+                        } else if (waterLevel > WL2) {
+                            dataStore.setValveState(ValveState.NORMAL);
+                            dataStore.setValveAngle(ANGLE_25_PERCENT);
+                            sendFrequencyToESP(Frequency.F1);
+                        } else if (waterLevel > WL3) {
+                            dataStore.setValveState(ValveState.PRE_ALARM_TOO_HIGH);
+                            dataStore.setValveAngle(ANGLE_25_PERCENT);
+                            sendFrequencyToESP(Frequency.F2);
+                        } else if (waterLevel > WL4) {
+                            dataStore.setValveState(ValveState.ALARM_TOO_HIGH);
+                            dataStore.setValveAngle(ANGLE_50_PERCENT);
+                            sendFrequencyToESP(Frequency.F2);
+                        } else {
+                            dataStore.setValveState(ValveState.ALARM_TOO_HIGH_CRITIC);
+                            dataStore.setValveAngle(ANGLE_100_PERCENT);
+                            sendFrequencyToESP(Frequency.F2);
+                        }
+
+                    })
+                    .subscribe(WATER_LEVEL_TOPIC, MqttQoS.EXACTLY_ONCE.value());
         });
     }
 
-
-    private void log(String msg) {
-        System.out.println("[MQTT AGENT] "+msg);
+    private void sendFrequencyToESP(Frequency frequency) {
+        client.publish(FREQUENCY_TOPIC,
+                Buffer.buffer(frequency.toString()),
+                MqttQoS.AT_LEAST_ONCE,
+                false,
+                false);
     }
 
 }

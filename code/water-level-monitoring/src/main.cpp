@@ -3,33 +3,28 @@
 #include <PubSubClient.h>
 
 //tuo wifi da hotspot
-const char *ssid = "tuo nome hotspot";
-const char *password = "tua pw";
+const char *ssid = "hotspot";
+const char *password = "pfjrbqzsocuvuhebyk";
 
 //mqtt di un server web
-const char *mqttServer = "broker.hivemq.com";
+const char *mqttServer = "broker.mqtt-dashboard.com";
 const int mqttPort = 1883;  // Porta del server MQTT
-
 const char *mqttClientId = "esp32_client";
-const char *topic = "water_level"; //mqtt topic
+
+//mqtt topics
+const char *waterLevelTopic = "esiot-2023-smart-river-monitoring-45983"; 
+const char *frequencyTopic = "esiot-2023-smart-river-monitoring-58329"; 
 
 const int ledPinG = 27;  // Pin del LED verde
 const int ledPinR = 25;  // Pin del LED rosso
 const int triggerPin = 12; // Pin del trigger del sonar
 const int echoPin = 13; // Pin dell'echo del sonar
-const long F1 = 10000; // Frequenza con cui si inviano i dati del sonar in stato normale
-const long F2 = 20000; // frequenza con cui si inviano i dati del sonar negli altri stati
+
+const long F1 = 2000; // Frequenza con cui si inviano i dati del sonar in stato normale
+const long F2 = 500; // frequenza con cui si inviano i dati del sonar negli altri stati
+long currentFrequency = F1;
 
 // Definizione degli stati del sistema
-enum SystemState {
-  NORMAL,
-  ALARM_TOO_LOW,
-  PRE_ALARM_TOO_HIGH,
-  ALARM_TOO_HIGH,
-  ALARM_TOO_HIGH_CRITIC
-};
-
-SystemState currentState = NORMAL;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -56,6 +51,13 @@ void connectToWiFi() {
 /* MQTT subscribing callback */
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println(String("Message arrived on [") + topic + "] len: " + length );
+  char* frequency = (char*) payload;
+
+  if (frequency[1] == '1') {
+    currentFrequency = F1;
+  } else {
+    currentFrequency = F2;
+  }
 }
 
 bool reconnectMQTT() {
@@ -64,6 +66,7 @@ bool reconnectMQTT() {
     Serial.print("Connessione al server MQTT...");
     if (client.connect(mqttClientId)) {
       Serial.println("connesso!");
+      client.subscribe(frequencyTopic);
       return true;
     } else {
       Serial.print("fallito, errore = ");
@@ -97,54 +100,27 @@ bool sendDataToRiver(double distance) {
   // Invia i dati al server MQTT
   String payload = String(distance);
   Serial.println(String("Publishing message: ") + payload);
-  if(client.publish(topic, payload.c_str())){
+  if (client.publish(waterLevelTopic, payload.c_str())){
     return true;
   }else{
     return false;
   }
 }
 
-void whenNormal(){
+void readDistance(){
   double distance = sonar();
-  Serial.println("Normal state");
 
   if (reconnectMQTT() && sendDataToRiver(distance)) {
     // La connessione di rete è attiva e i dati sono stati inviati correttamente
     digitalWrite(ledPinG, HIGH);
     digitalWrite(ledPinR, LOW);
-
-    // Invia dati solo se sono trascorsi almeno F1 secondi dall'ultimo invio
-    sendDataToRiver(distance);
-    Serial.println("message sent");
-    delay(F1); //invia i dati con una frequenza f1
-  }else{
-    // Problemi di connessione o invio dati2
-    Serial.println("problema rilevato");
-    digitalWrite(ledPinG, LOW);
-    digitalWrite(ledPinR, HIGH);
-    delay(1000);
-  }
-}
-
-void whenNOTnormal(){
-  double distance = sonar();
-  Serial.println("not normal state");
-
-  if (reconnectMQTT() && sendDataToRiver(distance)) {
-    // La connessione di rete è attiva e i dati sono stati inviati correttamente
-    digitalWrite(ledPinG, HIGH);
-    digitalWrite(ledPinR, LOW);
-
-    // Invia dati solo se sono trascorsi almeno F1 secondi dall'ultimo invio
-    sendDataToRiver(distance);
-    Serial.println("message sent");
-    delay(F2); //invia i dati con una frequenza f2
+    delay(currentFrequency); //invia i dati con la frequenza prevista
   }else{
     // Problemi di connessione o invio dati
     Serial.println("problema rilevato");
     digitalWrite(ledPinG, LOW);
     digitalWrite(ledPinR, HIGH);
-    delay(1000);
+    delay(F2);
   }
 }
 
@@ -170,10 +146,5 @@ void loop() {
   }
   client.loop();
 
-  if (currentState == NORMAL){
-    whenNormal();
-  } else if(currentState == ALARM_TOO_LOW || currentState == PRE_ALARM_TOO_HIGH ||
-              currentState == ALARM_TOO_HIGH || currentState == ALARM_TOO_HIGH_CRITIC) {
-    whenNOTnormal();
-  }
+  readDistance();
 }
