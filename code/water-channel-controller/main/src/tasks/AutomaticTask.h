@@ -5,20 +5,20 @@
 #include "Task.h"
 #include "components/actuators/Servo.h"
 #include "components/actuators/Display.h"
-#include "components/actuators/Potentiometer.h"
 
 class TaskAutomatic : public Task {
 public:
-    TaskAutomatic(ServoMotor& servo, Display& display, Potentiometer& potentiometer);
+    TaskAutomatic(ServoMotor& servo, Display& display);
     void init(int period) override;
     void tick() override;
+    void setReceivedValue(int value);
 
 private:
     ServoMotor& myServo;
     Display& myDisplay;
-    Potentiometer& myPotentiometer;
-
-    // Aggiungi altre variabili di stato o parametri specifici
+    
+    int receivedValue;
+    
 };
 
 #endif  // TASK_AUTOMATIC_H

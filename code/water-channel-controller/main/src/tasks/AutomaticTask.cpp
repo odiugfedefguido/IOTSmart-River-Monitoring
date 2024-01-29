@@ -1,9 +1,8 @@
-// TaskAutomatic.cpp
 #include "AutomaticTask.h"
 #include "SystemState.h"
 
-TaskAutomatic::TaskAutomatic(ServoMotor& servo, Display& display, Potentiometer& potentiometer)
-    : Task(SystemState::AUTOMATIC_STATE), myServo(servo), myDisplay(display), myPotentiometer(potentiometer) {
+TaskAutomatic::TaskAutomatic(ServoMotor& servo, Display& display)
+    : Task(SystemState::AUTOMATIC_STATE), myServo(servo), myDisplay(display), receivedValue(0) {
 
 }
 
@@ -12,14 +11,19 @@ void TaskAutomatic::init(int period) {
 
 }
 
+void TaskAutomatic::setReceivedValue(int value) {
+    receivedValue = value;
+}
+
 void TaskAutomatic::tick() {
 
-    int potValue = myPotentiometer.perPot(); //questo è sbagliato //lo riceve in input da fuori
-    myServo.write(potValue);
 
     
-    myDisplay.SetValue(potValue);
+    myDisplay.SetValue(receivedValue);
     myDisplay.print();
+    int servoAngle = map(receivedValue, 0, 100, 0, 180);
+
+    myServo.write(receivedValue);
 
     
 }
