@@ -79,7 +79,7 @@ void loop() {
 #include "components/sensor/Button.h"
 
 #define BUTTON_PIN 2
-#define SERVO_PIN 3
+#define SERVO_PIN 9
 
 Button button(BUTTON_PIN);
 
