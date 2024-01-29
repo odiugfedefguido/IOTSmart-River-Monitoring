@@ -1,6 +1,5 @@
 // Task.cpp
 #include "Task.h"
-#include "StateMachine.h"
 
 Task::Task(SystemState activeState) : activeState(activeState) {
     active = false;
@@ -44,7 +43,7 @@ bool Task::isPeriodic() {
 }
 
 bool Task::isActive() {
-    return active && (StateMachine::getCurrentState() == activeState);
+    return active;
 }
 
 void Task::setActive(bool active) {

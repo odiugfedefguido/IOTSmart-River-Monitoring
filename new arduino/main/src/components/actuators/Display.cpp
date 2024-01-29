@@ -9,8 +9,7 @@ Display::Display() {
   // Eventuali inizializzazioni
 }
 
-
-  void Display::set() {
+void Display::set() {
   lcd.init();
   lcd.backlight();
   lcd.begin(20, 4);  // Inizializza il display con le dimensioni appropriate
@@ -24,10 +23,9 @@ void Display::SetValue(int value){
 }
 
 void Display::print() {
-
   lcd.clear();
   lcd.setCursor(2, 1); // Imposta il cursore sulla terza colonna e sulla seconda riga.
-  lcd.print(displayValue); // Stampa il valore del displayValue sull'lcd
+  lcd.print(String(displayValue)); // Stampa il valore del displayValue sull'lcd
 }
 
 

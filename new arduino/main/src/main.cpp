@@ -79,7 +79,7 @@ void loop() {
 #include "components/sensor/Button.h"
 
 #define BUTTON_PIN 2
-#define SERVO_PIN 9
+#define SERVO_PIN 3
 
 Button button(BUTTON_PIN);
 
@@ -94,12 +94,14 @@ bool buttonState = false;
 bool lastButtonState = false;
 bool debounceState = false;
 unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
-bool isAutomatic = true;
+unsigned long debounceDelay = 100;
 
 void setup() {
     button.setup();
     Serial.begin(9600);
+
+    myServo.attach();
+    myDisplay.set();
 
     taskAutomatic.init(1000);
     taskManual.init(1000);
@@ -112,38 +114,35 @@ void loop() {
 
     if (isButtonPressed && !lastButtonState) {
         // button is pressed
-        /*if (taskManual.isActive()){
-            taskManual.setActive(false);
+
+        if (taskManual.isActive()){
             taskAutomatic.setActive(true);
+            taskManual.setActive(false);
             Serial.println("Switching to AUTOMATIC mode");
         } else {
             taskAutomatic.setActive(false);
             taskManual.setActive(true);
             Serial.println("Switching to MANUAL mode");
-        }*/
-        Serial.println("\n\nCLICKED\n\n");
-        isAutomatic = !isAutomatic;
+        }
+        
         lastButtonState = isButtonPressed;
         delay(debounceDelay);
 
     } else if (!isButtonPressed && lastButtonState) {
         // button is released
-        Serial.println("\n\nRELEASED\n\n");
         lastButtonState = isButtonPressed;
         delay(debounceDelay);
     }
 
-    Serial.println(isAutomatic);
-
     // Attendi un breve periodo per evitare debounce del pulsante
-    delay(10);
+    delay(200);
 
     // Esegui il task corrente se è attivo
-    /*if (taskAutomatic.isActive()) {
+    if (taskAutomatic.isActive()) {
         taskAutomatic.tick();
         Serial.println("automatic tick");
     } else if (taskManual.isActive()) {
         taskManual.tick();
         Serial.println("manual tick");
-    }*/
+    }
 }
