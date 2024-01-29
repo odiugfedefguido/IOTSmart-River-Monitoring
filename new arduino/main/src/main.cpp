@@ -95,6 +95,7 @@ bool lastButtonState = false;
 bool debounceState = false;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 50;
+bool isAutomatic = true;
 
 void setup() {
     button.setup();
@@ -106,55 +107,43 @@ void setup() {
 
 void loop() {
     // Leggi lo stato corrente del pulsante
-    bool reading = button.read() == HIGH;
+    bool isButtonPressed = button.read() == HIGH;
+    // Serial.println(isButtonPressed);
 
-    // Verifica se lo stato del pulsante è cambiato
-    if (reading != lastButtonState) {
-        // Aggiorna il timestamp dell'ultimo cambio di stato
-        lastDebounceTime = millis();
-        debounceState = false;
+    if (isButtonPressed && !lastButtonState) {
+        // button is pressed
+        /*if (taskManual.isActive()){
+            taskManual.setActive(false);
+            taskAutomatic.setActive(true);
+            Serial.println("Switching to AUTOMATIC mode");
+        } else {
+            taskAutomatic.setActive(false);
+            taskManual.setActive(true);
+            Serial.println("Switching to MANUAL mode");
+        }*/
+        Serial.println("\n\nCLICKED\n\n");
+        isAutomatic = !isAutomatic;
+        lastButtonState = isButtonPressed;
+        delay(debounceDelay);
+
+    } else if (!isButtonPressed && lastButtonState) {
+        // button is released
+        Serial.println("\n\nRELEASED\n\n");
+        lastButtonState = isButtonPressed;
+        delay(debounceDelay);
     }
 
-    // Verifica se è trascorso il periodo di debounce
-    if (!debounceState && (millis() - lastDebounceTime) > debounceDelay) {
-        // Verifica se lo stato attuale è diverso dallo stato precedente
-        if (reading != buttonState) {
-            buttonState = reading;
+    Serial.println(isAutomatic);
 
-            // Cambia lo stato solo quando il pulsante passa da LOW a HIGH
-            if (buttonState) {
-                if(taskManual.isActive()){
-                    taskManual.setActive(false);
-                    taskAutomatic.setActive(true);
-                    Serial.println("Switching to AUTOMATIC mode");
-                } else {
-                    taskAutomatic.setActive(false);
-                    taskManual.setActive(true);
-                    Serial.println("Switching to MANUAL mode");
-                }
-
-                // Attendi un breve periodo per evitare debounce del pulsante
-                delay(500);
-            }
-            Serial.println("manual state: " + String(taskManual.isActive()) + " automatic state: " + String(taskAutomatic.isActive()));
-            debounceState = true;
-        }
-    }
-
-    // Aggiorna lo stato precedente del pulsante
-    lastButtonState = reading;
+    // Attendi un breve periodo per evitare debounce del pulsante
+    delay(10);
 
     // Esegui il task corrente se è attivo
-    if (taskAutomatic.isActive()) {
+    /*if (taskAutomatic.isActive()) {
         taskAutomatic.tick();
         Serial.println("automatic tick");
     } else if (taskManual.isActive()) {
         taskManual.tick();
         Serial.println("manual tick");
-    }
-
-    // Verifica se il pulsante è stato rilasciato
-    if (!reading) {
-        debounceState = false;
-    }
+    }*/
 }
