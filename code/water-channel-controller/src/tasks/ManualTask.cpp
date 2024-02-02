@@ -9,14 +9,9 @@ void TaskManual::init(int period) {
 }
 
 void TaskManual::tick() {
-
-    // Leggi il valore del potenziometro
-    int potValue = myPotentiometer.perPot();
+    int angle = myPotentiometer.perPot();
     
-    // Modifica il valore del display
-    myDisplay.print(potValue, "MANUAL");
-
-    // Muovi il servo in base al valore del potenziometro
-    Serial.println("Servo angle: " + String(potValue));
-    myServo.write(potValue);
+    Serial.println("ANGLE " + String(angle));
+    myDisplay.print(angle, "MANUAL");
+    myServo.write(angle);
 }

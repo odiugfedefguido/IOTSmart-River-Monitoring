@@ -1,7 +1,9 @@
 #include "Arduino.h"
 #include "tasks/AutomaticTask.h"
 #include "tasks/ManualTask.h"
+#include "tasks/DashboardTask.h"
 #include "components/sensor/Button.h"
+#include "tasks/StateMachine.h"
 
 #define BUTTON_PIN 2
 #define SERVO_PIN 3
@@ -14,10 +16,13 @@ Potentiometer myPotentiometer(A0);
 
 TaskAutomatic taskAutomatic(myServo, myDisplay);
 TaskManual taskManual(myServo, myDisplay, myPotentiometer);
+TaskDashboard taskDashboard(myServo, myDisplay);
 
 bool buttonState = false;
 bool lastButtonState = false;
 unsigned long debounceDelay = 100;
+
+void checkForButtonPress();
 
 void setup() {
     button.setup();
@@ -25,27 +30,37 @@ void setup() {
 
     myServo.attach();
     myDisplay.set();
-
-    taskAutomatic.setActive(true);
-    taskManual.setActive(false);
 }
 
 void loop() {
+    // check for switches into manual mode and back
+    checkForButtonPress();
+
+    // schedule the correct task for the current state
+    if (StateMachine::getCurrentState() == AUTOMATIC_STATE) {
+        taskAutomatic.tick();
+    } else if (StateMachine::getCurrentState() == MANUAL_STATE) {
+        taskManual.tick();
+    } else {
+        taskDashboard.tick();
+    }
+}
+
+void checkForButtonPress() {
     // Leggi lo stato corrente del pulsante
     bool isButtonPressed = button.read() == HIGH;
 
     if (isButtonPressed && !lastButtonState) {
         // button is pressed
 
-        if (taskManual.isActive()){
-            taskAutomatic.setActive(true);
-            taskManual.setActive(false);
-            Serial.println("AUTOMATIC"); // Invia comando via seriale alla dashboard
-        } else if (taskAutomatic.isActive()) {
-            taskAutomatic.setActive(false);
-            taskManual.setActive(true);
+        // change state and notify the dashboard
+        if (StateMachine::getCurrentState() == MANUAL_STATE) {
+            Serial.println("AUTOMATIC");
+            StateMachine::transitionTo(AUTOMATIC_STATE);
+        } else if (StateMachine::getCurrentState() == AUTOMATIC_STATE) {
             Serial.println("MANUAL"); 
             Serial.println("ANGLE " + String(myPotentiometer.perPot())); // Invia comando con percentuale via seriale
+            StateMachine::transitionTo(MANUAL_STATE);
         }
         
         lastButtonState = isButtonPressed;
@@ -59,47 +74,4 @@ void loop() {
 
     // Attendi un breve periodo per evitare debounce del pulsante
     delay(200);
-
-    Serial.println("automatic = " + String(taskAutomatic.isActive()));
-    Serial.println("manual = " + String(taskManual.isActive()));
-
-    // Esegui il task corrente se è attivo
-    if (taskAutomatic.isActive()) {
-        taskAutomatic.tick();
-        
-        // Leggi la seriale per eventuali comandi dalla dashboard in modalità automatica
-        while (Serial.available() > 0) {
-            String comandoAutomatico = Serial.readStringUntil('\n');
-
-            if (comandoAutomatico == "DASHBOARD") {
-                taskAutomatic.setActive(false);
-            }
-
-            // Estrai il valore dalla stringa e convertilo in intero
-            int valoreAutomatico = comandoAutomatico.substring(comandoAutomatico.indexOf(' ') + 1).toInt();
-
-            // Imposta il valore ricevuto nella classe TaskAutomatic
-            taskAutomatic.setReceivedValue(valoreAutomatico);        
-        }
-    } else if (taskManual.isActive()) {
-        // manual mode
-        taskManual.tick();
-        Serial.println("ANGLE " + String(myPotentiometer.perPot())); // Invia la percentuale attuale via seriale
-    } else {
-
-        // dashboard mode
-        while (Serial.available() > 0) {
-            String comandoAutomatico = Serial.readStringUntil('\n');
-            Serial.println(comandoAutomatico);
-
-            if (comandoAutomatico == "DASHBOARD") {
-                taskAutomatic.setActive(true);
-            } else {
-                // Estrai il valore dalla stringa e convertilo in intero
-                int valoreAutomatico = comandoAutomatico.substring(comandoAutomatico.indexOf(' ') + 1).toInt();
-                myDisplay.print(valoreAutomatico, "DASHBOARD");
-                myServo.write(valoreAutomatico);   
-            }            
-        }
-    }
 }

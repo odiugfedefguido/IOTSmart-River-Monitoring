@@ -11,14 +11,10 @@ public:
     TaskAutomatic(ServoMotor& servo, Display& display);
     void init(int period) override;
     void tick() override;
-    void setReceivedValue(int value);
 
 private:
     ServoMotor& myServo;
     Display& myDisplay;
-    
-    int receivedValue;
-    
 };
 
 #endif  // TASK_AUTOMATIC_H
