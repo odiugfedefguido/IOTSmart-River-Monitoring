@@ -17,8 +17,6 @@ TaskManual taskManual(myServo, myDisplay, myPotentiometer);
 
 bool buttonState = false;
 bool lastButtonState = false;
-bool debounceState = false;
-unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 100;
 
 void setup() {
@@ -28,8 +26,8 @@ void setup() {
     myServo.attach();
     myDisplay.set();
 
-    taskAutomatic.init(1000);
-    taskManual.init(1000);
+    taskAutomatic.setActive(true);
+    taskManual.setActive(false);
 }
 
 void loop() {
@@ -42,12 +40,10 @@ void loop() {
         if (taskManual.isActive()){
             taskAutomatic.setActive(true);
             taskManual.setActive(false);
-            Serial.println("Switching to AUTOMATIC mode");
             Serial.println("AUTOMATIC"); // Invia comando via seriale alla dashboard
-        } else {
+        } else if (taskAutomatic.isActive()) {
             taskAutomatic.setActive(false);
             taskManual.setActive(true);
-            Serial.println("Switching to MANUAL mode");
             Serial.println("MANUAL"); 
             Serial.println("ANGLE " + String(myPotentiometer.perPot())); // Invia comando con percentuale via seriale
         }
@@ -64,6 +60,9 @@ void loop() {
     // Attendi un breve periodo per evitare debounce del pulsante
     delay(200);
 
+    Serial.println("automatic = " + String(taskAutomatic.isActive()));
+    Serial.println("manual = " + String(taskManual.isActive()));
+
     // Esegui il task corrente se è attivo
     if (taskAutomatic.isActive()) {
         taskAutomatic.tick();
@@ -71,18 +70,36 @@ void loop() {
         // Leggi la seriale per eventuali comandi dalla dashboard in modalità automatica
         while (Serial.available() > 0) {
             String comandoAutomatico = Serial.readStringUntil('\n');
-            Serial.println(comandoAutomatico);
+
+            if (comandoAutomatico == "DASHBOARD") {
+                taskAutomatic.setActive(false);
+            }
+
             // Estrai il valore dalla stringa e convertilo in intero
             int valoreAutomatico = comandoAutomatico.substring(comandoAutomatico.indexOf(' ') + 1).toInt();
 
             // Imposta il valore ricevuto nella classe TaskAutomatic
             taskAutomatic.setReceivedValue(valoreAutomatico);        
         }
-
-        // Serial.println("automatic tick");
     } else if (taskManual.isActive()) {
+        // manual mode
         taskManual.tick();
-        // Serial.println("manual tick");
         Serial.println("ANGLE " + String(myPotentiometer.perPot())); // Invia la percentuale attuale via seriale
+    } else {
+
+        // dashboard mode
+        while (Serial.available() > 0) {
+            String comandoAutomatico = Serial.readStringUntil('\n');
+            Serial.println(comandoAutomatico);
+
+            if (comandoAutomatico == "DASHBOARD") {
+                taskAutomatic.setActive(true);
+            } else {
+                // Estrai il valore dalla stringa e convertilo in intero
+                int valoreAutomatico = comandoAutomatico.substring(comandoAutomatico.indexOf(' ') + 1).toInt();
+                myDisplay.print(valoreAutomatico, "DASHBOARD");
+                myServo.write(valoreAutomatico);   
+            }            
+        }
     }
 }

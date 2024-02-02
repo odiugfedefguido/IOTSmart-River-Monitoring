@@ -47,7 +47,10 @@ public class SerialAgent extends Thread {
                     }
                 }
 
-                // check for instructions from the dashboard
+                // check for messages to send to the dashboard
+                if (dataStore.clearDashboardModeSwitches()) {
+                    channel.sendMsg("DASHBOARD");
+                }
 
                 // the valve angle is sent as a command to the Arduino which instructs the servo motor
                 channel.sendMsg("NEWANGLE " + dataStore.getValveAngle());

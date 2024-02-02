@@ -18,6 +18,11 @@ public class DataStore {
     private ControlState controlState = ControlState.AUTOMATIC;
     private ValveState valveState = ValveState.NORMAL;
     private int valveAngle = 120;
+
+    // a flag indicating that there is a switch to or from dashboard mode
+    // that has not yet been sent to the Arduino – a cheap blocking queue
+    private boolean hasWaitingDashboardModeSwitch = false;
+
     private final Deque<Double> history = new LinkedList<>();
 
     private final Random random = new Random();
@@ -47,6 +52,10 @@ public class DataStore {
 
     public void setControlState(ControlState controlState) {
         synchronized (lock) {
+            if (controlState.equals(ControlState.DASHBOARD) || this.controlState.equals(ControlState.DASHBOARD)) {
+                hasWaitingDashboardModeSwitch = true;
+            }
+
             this.controlState = controlState;
         }
     }
@@ -54,6 +63,19 @@ public class DataStore {
     public void setValveState(ValveState valveState) {
         synchronized (lock) {
             this.valveState = valveState;
+        }
+    }
+
+    /**
+     * Clear the {@link #hasWaitingDashboardModeSwitch} flag.
+     *
+     * @return true if it was dirty, false otherwise
+     */
+    public boolean clearDashboardModeSwitches() {
+        synchronized (lock) {
+            boolean previousValue = hasWaitingDashboardModeSwitch;
+            hasWaitingDashboardModeSwitch = false;
+            return previousValue;
         }
     }
 

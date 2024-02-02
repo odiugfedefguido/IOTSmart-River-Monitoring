@@ -16,8 +16,5 @@ void TaskAutomatic::setReceivedValue(int value) {
 
 void TaskAutomatic::tick() {
     myDisplay.print(receivedValue, "AUTOMATIC");
-
-    Serial.println("RECEIVED: " + String(receivedValue));
-
     myServo.write(receivedValue);
 }
