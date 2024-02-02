@@ -48,7 +48,8 @@ void loop() {
             taskAutomatic.setActive(false);
             taskManual.setActive(true);
             Serial.println("Switching to MANUAL mode");
-            Serial.println("MANUAL " + String(myPotentiometer.perPot())); // Invia comando con percentuale via seriale
+            Serial.println("MANUAL"); 
+            Serial.println("ANGLE " + String(myPotentiometer.perPot())); // Invia comando con percentuale via seriale
         }
         
         lastButtonState = isButtonPressed;
@@ -70,6 +71,7 @@ void loop() {
         // Leggi la seriale per eventuali comandi dalla dashboard in modalità automatica
         while (Serial.available() > 0) {
             String comandoAutomatico = Serial.readStringUntil('\n');
+            Serial.println(comandoAutomatico);
             // Estrai il valore dalla stringa e convertilo in intero
             int valoreAutomatico = comandoAutomatico.substring(comandoAutomatico.indexOf(' ') + 1).toInt();
 
@@ -77,10 +79,10 @@ void loop() {
             taskAutomatic.setReceivedValue(valoreAutomatico);        
         }
 
-        Serial.println("automatic tick");
+        // Serial.println("automatic tick");
     } else if (taskManual.isActive()) {
         taskManual.tick();
-        Serial.println("manual tick");
-        Serial.println("PERCENTAGE " + String(myPotentiometer.perPot())); // Invia la percentuale attuale via seriale
+        // Serial.println("manual tick");
+        Serial.println("ANGLE " + String(myPotentiometer.perPot())); // Invia la percentuale attuale via seriale
     }
 }

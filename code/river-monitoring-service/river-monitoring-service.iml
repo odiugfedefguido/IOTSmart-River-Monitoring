@@ -11,5 +11,7 @@
     <orderEntry type="library" name="io.vertx.web" level="project" />
     <orderEntry type="library" name="io.vertx.web.client" level="project" />
     <orderEntry type="library" name="io.vertx.mqtt" level="project" />
+    <orderEntry type="library" name="io.github.java.native.jssc" level="project" />
+    <orderEntry type="library" name="slf4j.simple" level="project" />
   </component>
 </module>

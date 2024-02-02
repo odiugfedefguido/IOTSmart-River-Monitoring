@@ -1,5 +1,6 @@
 package mqtt;
 
+import data.ControlState;
 import data.DataStore;
 import data.Frequency;
 import data.ValveState;
@@ -46,32 +47,33 @@ public class MQTTAgent extends AbstractVerticle {
 
             client.publishHandler(s -> {
                         System.out.println("There are new message in topic: " + s.topicName());
-                        System.out.println("Content (as string) of the message: " + s.payload().toString());
-
                         double waterLevel = Double.parseDouble(s.payload().toString());
                         System.out.println("Content (as double) of the message: " + waterLevel);
                         dataStore.addDataPoint(waterLevel);
 
-                        if (waterLevel > WL1) {
-                            dataStore.setValveState(ValveState.ALARM_TOO_LOW);
-                            dataStore.setValveAngle(ANGLE_0_PERCENT);
-                            sendFrequencyToESP(Frequency.F1);
-                        } else if (waterLevel > WL2) {
-                            dataStore.setValveState(ValveState.NORMAL);
-                            dataStore.setValveAngle(ANGLE_25_PERCENT);
-                            sendFrequencyToESP(Frequency.F1);
-                        } else if (waterLevel > WL3) {
-                            dataStore.setValveState(ValveState.PRE_ALARM_TOO_HIGH);
-                            dataStore.setValveAngle(ANGLE_25_PERCENT);
-                            sendFrequencyToESP(Frequency.F2);
-                        } else if (waterLevel > WL4) {
-                            dataStore.setValveState(ValveState.ALARM_TOO_HIGH);
-                            dataStore.setValveAngle(ANGLE_50_PERCENT);
-                            sendFrequencyToESP(Frequency.F2);
-                        } else {
-                            dataStore.setValveState(ValveState.ALARM_TOO_HIGH_CRITIC);
-                            dataStore.setValveAngle(ANGLE_100_PERCENT);
-                            sendFrequencyToESP(Frequency.F2);
+                        if (dataStore.getControlState().equals(ControlState.AUTOMATIC)) {
+
+                            if (waterLevel > WL1) {
+                                dataStore.setValveState(ValveState.ALARM_TOO_LOW);
+                                dataStore.setValveAngle(ANGLE_0_PERCENT);
+                                sendFrequencyToESP(Frequency.F1);
+                            } else if (waterLevel > WL2) {
+                                dataStore.setValveState(ValveState.NORMAL);
+                                dataStore.setValveAngle(ANGLE_25_PERCENT);
+                                sendFrequencyToESP(Frequency.F1);
+                            } else if (waterLevel > WL3) {
+                                dataStore.setValveState(ValveState.PRE_ALARM_TOO_HIGH);
+                                dataStore.setValveAngle(ANGLE_25_PERCENT);
+                                sendFrequencyToESP(Frequency.F2);
+                            } else if (waterLevel > WL4) {
+                                dataStore.setValveState(ValveState.ALARM_TOO_HIGH);
+                                dataStore.setValveAngle(ANGLE_50_PERCENT);
+                                sendFrequencyToESP(Frequency.F2);
+                            } else {
+                                dataStore.setValveState(ValveState.ALARM_TOO_HIGH_CRITIC);
+                                dataStore.setValveAngle(ANGLE_100_PERCENT);
+                                sendFrequencyToESP(Frequency.F2);
+                            }
                         }
 
                     })

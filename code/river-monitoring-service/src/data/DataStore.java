@@ -15,7 +15,7 @@ public class DataStore {
     private static final Object lock = new Object();
 
     // the data to be stored
-    private ControlState controlState = ControlState.MANUAL;
+    private ControlState controlState = ControlState.AUTOMATIC;
     private ValveState valveState = ValveState.NORMAL;
     private int valveAngle = 120;
     private final Deque<Double> history = new LinkedList<>();
@@ -60,6 +60,16 @@ public class DataStore {
     public void setValveAngle(int valveAngle) {
         synchronized (lock) {
             this.valveAngle = valveAngle;
+        }
+    }
+
+    public int getValveAngle() {
+        return valveAngle;
+    }
+
+    public ControlState getControlState() {
+        synchronized (lock) {
+            return this.controlState;
         }
     }
 

@@ -17,16 +17,13 @@ int Potentiometer::read()
 
 int Potentiometer::perPot() //converte il valore del potenziometro in percentuale
 {
-  if(read() > 1000)
-  {
-    return 100;
-  }
-  else if(read() < 0)
-  {
+  if (read() > 1000) {
+    return 180;
+  } else if (read() < 0) {
     return 0;
+  } else {
+    return map(read(), 0, 1000, 0, 180);
   }
-  else
-  return read()/10;
   
 }
 

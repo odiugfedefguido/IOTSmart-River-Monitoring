@@ -17,13 +17,13 @@ void TaskAutomatic::setReceivedValue(int value) {
 
 void TaskAutomatic::tick() {
 
-
-    
     myDisplay.SetValue(receivedValue);
     myDisplay.print();
-    int servoAngle = map(receivedValue, 0, 100, 0, 180);
-
-    myServo.write(receivedValue);
-
     
+    // TODO: delete this line
+    // int servoAngle = map(receivedValue, 0, 100, 0, 180);
+    Serial.println("RECEIVED: " + String(receivedValue));
+
+    // TODO: Why is this not working?
+    myServo.write(receivedValue);
 }
