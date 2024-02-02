@@ -1,9 +1,8 @@
 #include "ManualTask.h"
 #include "Arduino.h"
-#include "SystemState.h"
 
 TaskManual::TaskManual(ServoMotor &servo, Display &display, Potentiometer &potentiometer)
-    : Task(SystemState::MANUAL_STATE), myServo(servo), myDisplay(display), myPotentiometer(potentiometer) {}
+    : Task(), myServo(servo), myDisplay(display), myPotentiometer(potentiometer) {}
 
 void TaskManual::init(int period) {
     Task::init(period);
@@ -15,8 +14,7 @@ void TaskManual::tick() {
     int potValue = myPotentiometer.perPot();
     
     // Modifica il valore del display
-    myDisplay.SetValue(potValue);
-    myDisplay.print();
+    myDisplay.print(potValue, "MANUAL");
 
     // Muovi il servo in base al valore del potenziometro
     Serial.println("Servo angle: " + String(potValue));

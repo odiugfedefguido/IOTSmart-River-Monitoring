@@ -1,7 +1,7 @@
 // Task.cpp
 #include "Task.h"
 
-Task::Task(SystemState activeState) : activeState(activeState) {
+Task::Task() {
     active = false;
 }
 

@@ -1,5 +1,6 @@
 @import '@fontsource/figtree';
 
+
 html {
     font-family: 'Figtree', serif;
     color: white;
@@ -8,6 +9,7 @@ html {
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -18,4 +20,47 @@ body {
     justify-content: center;
     align-items: center;
     gap: 4rem;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+.section-stats {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+button {
+    background-color: #020202;
+    color: white;
+    border: 1px solid white;
+    border-radius: 0;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgba(255,255,255,.3);
+}
+
+button:disabled {
+    opacity: .7;
+}
+
+button:disabled {
+    background-color: #020202;
+}
+
+.status-value,
+[name="valve-input"] {
+    font-size: 1.1em;
+    padding: .2rem .5rem;
+    display: inline-block;
+    margin-top: .5rem;
+}
+
+[name="valve-input"] {
+    width: 150px;
 }

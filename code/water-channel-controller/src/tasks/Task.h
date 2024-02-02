@@ -3,11 +3,10 @@
 #define TASK_H
 
 #include "Arduino.h"
-#include "SystemState.h"
 
 class Task {
 public:
-    Task(SystemState activeState);
+    Task();
     virtual void init(int period);
     virtual void init();
     virtual void tick() = 0;
@@ -17,8 +16,6 @@ public:
     bool isPeriodic();
     bool isActive();
     virtual void setActive(bool active);
-    
-    SystemState activeState;
 
 private:
     int myPeriod;

@@ -22,14 +22,8 @@
             });
     }
 
-    const interval = setInterval(async () => {
-        fetchData();
-    }, 500);
-
-    onMount(async () => {
-        fetchData();
-    });
-
+    const interval = setInterval(async () => fetchData(), 500);
+    onMount(async () => fetchData());
     onDestroy(() => clearInterval(interval));
 
     function updateValveAngle () {
@@ -48,12 +42,35 @@
             console.debug(response)
         });
     }
+
+    function switchMode () {
+        console.log("Attempting to switch mode.");
+        fetch(BACKEND_URL + "/mode", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then( (response) => { 
+            console.debug(response)
+        });
+    }
 </script>
 
 <section class="section-stats">
     <h1>River Monitoring Dashboard</h1>
-    <p>Control: <br/>{ controlState }</p>
-    <p>State: <br/>{ valveState }</p>
+
+    <p> 
+        Control: <br/>
+        <button class="status-value" disabled={controlState === 'MANUAL'} on:click={switchMode}>
+            { controlState }
+        </button>
+    </p>
+
+    <p>
+        State: <br/>
+        <span class="status-value">{ valveState }</span>
+    </p>
 
     <form>
         <label for="valve-input">Valve angle: { valveAngle }</label><br/>
@@ -64,15 +81,3 @@
 <section class="section-diagram">
     <Diagram dataPoints={dataPoints} />
 </section>
-
-<style>
-h1 {
-    font-size: 2rem;
-}
-
-.section-stats {
-    display: flex;
-    align-items: start;
-    gap: 2rem;
-}
-</style>

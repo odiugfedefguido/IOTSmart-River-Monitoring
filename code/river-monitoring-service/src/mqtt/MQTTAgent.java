@@ -46,9 +46,9 @@ public class MQTTAgent extends AbstractVerticle {
             DataStore dataStore = DataStore.getInstance();
 
             client.publishHandler(s -> {
-                        System.out.println("There are new message in topic: " + s.topicName());
+                        // System.out.println("There are new message in topic: " + s.topicName());
                         double waterLevel = Double.parseDouble(s.payload().toString());
-                        System.out.println("Content (as double) of the message: " + waterLevel);
+                        // System.out.println("Content (as double) of the message: " + waterLevel);
                         dataStore.addDataPoint(waterLevel);
 
                         if (dataStore.getControlState().equals(ControlState.AUTOMATIC)) {

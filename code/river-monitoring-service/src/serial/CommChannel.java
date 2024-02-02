@@ -19,7 +19,7 @@ public interface CommChannel {
     /**
      * To receive a message.
      * <p>
-     * Blocking behaviour.
+     * Uses a timeout of 10 milliseconds and return null if no message was found.
      */
     String receiveMsg() throws InterruptedException;
 

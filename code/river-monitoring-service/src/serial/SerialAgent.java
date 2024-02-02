@@ -16,7 +16,7 @@ public class SerialAgent extends Thread {
     public void start() {
         try {
             SerialCommChannel channel = new SerialCommChannel(port, 9600);
-            // SerialCommChannel channel = new SerialCommChannel("/dev/cu.usbmodem1411",9600);
+
             /* attesa necessaria per fare in modo che Arduino completi il reboot */
             System.out.println("[SERIAL] Waiting for Arduino rebooting …");
             Thread.sleep(4000);
@@ -26,25 +26,30 @@ public class SerialAgent extends Thread {
 
             while (true) {
                 String msg = channel.receiveMsg();
-
                 if (msg != null) {
-                    // TODO: Remove
-                    // System.err.println(msg);
+                    // there is a message on the serial channel
+
                     if (msg.startsWith("ANGLE")) {
-                        int angle = Integer.parseInt(msg.substring(6));
+                        // a new valve angle was sent by the potentiometer in manual mode
                         if (dataStore.getControlState().equals(ControlState.MANUAL)) {
-                            System.out.println("New valve angle from potentiometer: " + angle);
+                            int angle = Integer.parseInt(msg.substring(6));
                             dataStore.setValveAngle(angle);
+                            // System.out.println("New valve angle from potentiometer: " + angle);
                         }
-                    } else if (msg.equals("AUTOMATIC")) {
+                    } else if (msg.equals("AUTOMATIC") && dataStore.getControlState().equals(ControlState.MANUAL)) {
+                        // the system switches back to automatic mode due to button press
                         System.out.println("Switching to automatic mode.");
                         dataStore.setControlState(ControlState.AUTOMATIC);
-                    } else if (msg.equals("MANUAL")) {
+                    } else if (msg.equals("MANUAL") && dataStore.getControlState().equals(ControlState.AUTOMATIC)) {
+                        // the system switches to manual mode due to button press
                         System.out.println("Switching to manual mode.");
                         dataStore.setControlState(ControlState.MANUAL);
                     }
                 }
 
+                // check for instructions from the dashboard
+
+                // the valve angle is sent as a command to the Arduino which instructs the servo motor
                 channel.sendMsg("NEWANGLE " + dataStore.getValveAngle());
                 Thread.sleep(50);
             }

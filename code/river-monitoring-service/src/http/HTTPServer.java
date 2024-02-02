@@ -1,5 +1,6 @@
 package http;
 
+import data.ControlState;
 import data.DataStore;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerResponse;
@@ -16,6 +17,7 @@ public class HTTPServer extends AbstractVerticle {
     private int port;
     private static final int MAX_SIZE = 10;
     private LinkedList<DataPoint> values;
+    private DataStore dataStore = DataStore.getInstance();
 
     public HTTPServer(int port) {
         values = new LinkedList<>();
@@ -28,6 +30,7 @@ public class HTTPServer extends AbstractVerticle {
         router.route().handler(CorsHandler.create(".*."));
         router.route().handler(BodyHandler.create());
         router.post("/api/data").handler(this::handleAddNewData);
+        router.post("/api/mode").handler(this::handleToggleDashboardMode);
         router.get("/api/data").handler(this::handleGetData);
         vertx
                 .createHttpServer()
@@ -40,20 +43,39 @@ public class HTTPServer extends AbstractVerticle {
     // POST: /api/data
     private void handleAddNewData(RoutingContext routingContext) {
         HttpServerResponse response = routingContext.response();
-        log("new msg " + routingContext.getBodyAsString());
-        JsonObject res = routingContext.getBodyAsJson();
-        if (res == null) {
-            sendError(400, response);
-        } else {
-            float value = res.getInteger("valveAngle");
-            DataStore.getInstance().setValveAngle((int) value);
+        log("Received new message – " + routingContext.getBodyAsString());
+
+        if (dataStore.getControlState().equals(ControlState.DASHBOARD)) {
+            JsonObject res = routingContext.getBodyAsJson();
+            if (res == null) {
+                sendError(400, response);
+            } else {
+                float value = res.getInteger("valveAngle");
+                dataStore.setValveAngle((int) value);
+                response.setStatusCode(200).end();
+            }
+        }
+    }
+
+    // POST: /api/mode
+    private void handleToggleDashboardMode(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+        log("Received new message – " + routingContext.getBodyAsString());
+
+        if (dataStore.getControlState().equals(ControlState.AUTOMATIC)) {
+            log("Switching to dashboard control mode.");
+            dataStore.setControlState(ControlState.DASHBOARD);
+            response.setStatusCode(200).end();
+        } else if (dataStore.getControlState().equals(ControlState.DASHBOARD)) {
+            log("Switching to automatic control mode.");
+            dataStore.setControlState(ControlState.AUTOMATIC);
             response.setStatusCode(200).end();
         }
     }
 
     // GET: /api/data
     private void handleGetData(RoutingContext routingContext) {
-        var data = DataStore.getInstance().getJSON();
+        var data = dataStore.getJSON();
 
         routingContext.response()
                 .putHeader("content-type", "application/json")
