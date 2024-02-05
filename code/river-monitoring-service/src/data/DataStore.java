@@ -7,6 +7,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * Store for the internal state of the River Monitoring Service.
+ */
 public class DataStore {
     // the singleton instance
     private static DataStore instance = null;
@@ -23,6 +26,7 @@ public class DataStore {
     // that has not yet been sent to the Arduino – a cheap blocking queue
     private boolean hasWaitingDashboardModeSwitch = false;
 
+    // previous datastores
     private final Deque<Double> history = new LinkedList<>();
 
     private final Random random = new Random();
@@ -31,6 +35,9 @@ public class DataStore {
         // Singleton.
     }
 
+    /**
+     * Retrieve the singleton instance of this data store.
+     */
     public static DataStore getInstance() {
         if (instance == null) {
             instance = new DataStore();
@@ -38,6 +45,9 @@ public class DataStore {
         return instance;
     }
 
+    /**
+     * Add a new data point to the history.
+     */
     public void addDataPoint(Double datapoint) {
         synchronized (lock) {
             history.addLast(datapoint);
@@ -50,6 +60,11 @@ public class DataStore {
         }
     }
 
+    /**
+     * Update the current control state (see {@link ControlState}).
+     * If the new or current state was the {@link ControlState#DASHBOARD},
+     * then the {@link DataStore#hasWaitingDashboardModeSwitch} flag is set to true.
+     */
     public void setControlState(ControlState controlState) {
         synchronized (lock) {
             if (controlState.equals(ControlState.DASHBOARD) || this.controlState.equals(ControlState.DASHBOARD)) {
@@ -60,6 +75,9 @@ public class DataStore {
         }
     }
 
+    /**
+     * Set the state of the valve to one of {@link ValveState}.
+     */
     public void setValveState(ValveState valveState) {
         synchronized (lock) {
             this.valveState = valveState;
@@ -95,6 +113,9 @@ public class DataStore {
         }
     }
 
+    /**
+     * Return a JSON representation of the internal state.
+     */
     public JsonObject getJSON() {
         synchronized (lock) {
             JsonArray dataPoints = new JsonArray();
@@ -108,7 +129,6 @@ public class DataStore {
             data.put("valveAngle", valveAngle);
             data.put("history", dataPoints);
 
-            // addDataPoint(random.nextDouble(100));
             return data;
         }
     }

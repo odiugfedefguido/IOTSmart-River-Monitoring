@@ -45,14 +45,14 @@ public class MQTTAgent extends AbstractVerticle {
 
             DataStore dataStore = DataStore.getInstance();
 
+            // event handler for published messages
             client.publishHandler(s -> {
-                        // System.out.println("There are new message in topic: " + s.topicName());
                         double waterLevel = Double.parseDouble(s.payload().toString());
-                        // System.out.println("Content (as double) of the message: " + waterLevel);
                         dataStore.addDataPoint(waterLevel);
 
                         if (dataStore.getControlState().equals(ControlState.AUTOMATIC)) {
-
+                            // compute the internal valve state and adjust valve angle
+                            // and frequencies acccordingly
                             if (waterLevel > WL1) {
                                 dataStore.setValveState(ValveState.ALARM_TOO_LOW);
                                 dataStore.setValveAngle(ANGLE_0_PERCENT);
@@ -81,6 +81,7 @@ public class MQTTAgent extends AbstractVerticle {
         });
     }
 
+    // send new frequencies to the ESP via MQTT
     private void sendFrequencyToESP(Frequency frequency) {
         client.publish(FREQUENCY_TOPIC,
                 Buffer.buffer(frequency.toString()),

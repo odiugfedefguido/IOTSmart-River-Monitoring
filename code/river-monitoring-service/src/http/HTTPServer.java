@@ -12,11 +12,12 @@ import io.vertx.ext.web.handler.CorsHandler;
 
 import java.util.LinkedList;
 
+/**
+ * Server for JSON data of the River Monitoring System.
+ */
 public class HTTPServer extends AbstractVerticle {
 
     private int port;
-    private static final int MAX_SIZE = 10;
-    private LinkedList<DataPoint> values;
     private DataStore dataStore = DataStore.getInstance();
 
     public HTTPServer(int port) {
@@ -29,9 +30,16 @@ public class HTTPServer extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.route().handler(CorsHandler.create(".*."));
         router.route().handler(BodyHandler.create());
+
+        // updating the valve angle
         router.post("/api/data").handler(this::handleAddNewData);
+
+        // switching between AUTOMATIC and DASHBOARD mode
         router.post("/api/mode").handler(this::handleToggleDashboardMode);
+
+        // fetching JSON data
         router.get("/api/data").handler(this::handleGetData);
+
         vertx
                 .createHttpServer()
                 .requestHandler(router)

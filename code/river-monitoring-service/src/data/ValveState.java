@@ -1,5 +1,8 @@
 package data;
 
+/**
+ * States of the system according to distance measurements.
+ */
 public enum ValveState {
     NORMAL,
     ALARM_TOO_LOW,
