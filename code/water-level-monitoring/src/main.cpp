@@ -2,57 +2,66 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-//tuo wifi da hotspot
+// Your WiFi credentials
 const char *ssid = "hotspot";
 const char *password = "pfjrbqzsocuvuhebyk";
 
-//mqtt di un server web
+// MQTT server details
 const char *mqttServer = "broker.mqtt-dashboard.com";
-const int mqttPort = 1883;  // Porta del server MQTT
+const int mqttPort = 1883;  
 const char *mqttClientId = "esp32_client";
 
-//mqtt topics
+// MQTT topics
 const char *waterLevelTopic = "esiot-2023-smart-river-monitoring-45983"; 
 const char *frequencyTopic = "esiot-2023-smart-river-monitoring-58329"; 
 
-const int ledPinG = 27;  // Pin del LED verde
-const int ledPinR = 25;  // Pin del LED rosso
-const int triggerPin = 12; // Pin del trigger del sonar
-const int echoPin = 13; // Pin dell'echo del sonar
+// Pin configurations
+const int ledPinG = 27;  // Green LED pin
+const int ledPinR = 25;  // Red LED pin
+const int triggerPin = 12; // Sonar trigger pin
+const int echoPin = 13; // Sonar echo pin
 
-const long F1 = 2000; // Frequenza con cui si inviano i dati del sonar in stato normale
-const long F2 = 500; // frequenza con cui si inviano i dati del sonar negli altri stati
+// Frequencies for sending sonar data
+const long F1 = 2000; // Frequency for normal state
+const long F2 = 500;  // Frequency for other states
 long currentFrequency = F1;
 
-// Definizione degli stati del sistema
-
+// WiFi and MQTT client instances
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+// Function to connect to WiFi
 void connectToWiFi() {
   delay(10);
 
-  Serial.println(String("Connecting to ") + ssid);  
+  // Displaying the SSID being connected to
+  Serial.println(String("Connecting to ") + ssid);
 
+  // Setting WiFi mode to station (client)  
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
 
+  // Attempting to connect to the WiFi network with specified credentials
+  WiFi.begin(ssid, password);
+  
+  // Waiting for the WiFi connection to be established
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-
+  
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
 
-/* MQTT subscribing callback */
+// MQTT callback for handling incoming messages
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println(String("Message arrived on [") + topic + "] len: " + length );
+  // Variable of the frequency taken from the ESP via MQTT
   char* frequency = (char*) payload;
 
+  // It changes the frequency to send the data 
   if (frequency[1] == '1') {
     currentFrequency = F1;
   } else {
@@ -60,64 +69,73 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+// Function to reconnect to the MQTT broker
 bool reconnectMQTT() {
-  // Connessione al server MQTT
+  // Check if not currently connected to the MQTT broker
   if (!client.connected()) {
-    Serial.print("Connessione al server MQTT...");
+    Serial.print("Connecting to MQTT server...");
+
+    // Attempting to connect to the MQTT broker with the client ID
     if (client.connect(mqttClientId)) {
-      Serial.println("connesso!");
+      Serial.println("connected!");
+      // Subscribe to the MQTT topic for receiving frequency updates
       client.subscribe(frequencyTopic);
       return true;
     } else {
-      Serial.print("fallito, errore = ");
+      // Connection attempt failed, display the error code
+      Serial.print("failed, error = ");
       Serial.println(client.state());
       return false;
     }
   }
+  // Return true if already connected to the MQTT broker
   return true;
 }
 
+// Function to perform sonar measurement and send data to MQTT broker
 double sonar() {
-  // Invia un impulso ultrasonico
+  // It sends an ultrasonic impuls to activate the sonar
   digitalWrite(triggerPin, LOW);
   delayMicroseconds(2);
   digitalWrite(triggerPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(triggerPin, LOW);
-
-  // Misura il tempo di ritorno dell'eco
+  
+  // Measure the echo return time
   long duration = pulseIn(echoPin, HIGH);
 
-  // Calcola la distanza in base alla durata misurata
-  // La formula è: Distanza = (velocità del suono * tempo di viaggio) / 2
-  // La velocità del suono è di circa 343 metri al secondo
+  // Calculate the distance based on the measured duration
+  // The formula is: Distance = (speed of sound * time of travel) / 2
+  // The speed of sound is approximately 343 meters per second
   float distance = (0.0343 * duration) / 2;
-
+  
   return distance;
 }
 
+// Function to send sonar data to the MQTT broker
 bool sendDataToRiver(double distance) {
-  // Invia i dati al server MQTT
   String payload = String(distance);
   Serial.println(String("Publishing message: ") + payload);
+  // Attempting to publish the sonar data to the specified MQTT topic
   if (client.publish(waterLevelTopic, payload.c_str())){
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
+// Function to read distance, handle MQTT communication, and control LEDs
 void readDistance(){
   double distance = sonar();
 
+  // The connection is OK and the network is OK
   if (reconnectMQTT() && sendDataToRiver(distance)) {
-    // La connessione di rete è attiva e i dati sono stati inviati correttamente
     digitalWrite(ledPinG, HIGH);
     digitalWrite(ledPinR, LOW);
-    delay(currentFrequency); //invia i dati con la frequenza prevista
-  }else{
-    // Problemi di connessione o invio dati
-    Serial.println("problema rilevato");
+    delay(currentFrequency); // It sends the data with the expected frequency
+  } else {
+    // There is a problem with the network or the connection
+    Serial.println("Problem detected");
     digitalWrite(ledPinG, LOW);
     digitalWrite(ledPinR, HIGH);
     delay(F2);
@@ -130,20 +148,24 @@ void setup() {
   pinMode(echoPin, INPUT);
   pinMode(ledPinG, OUTPUT);
   pinMode(ledPinR, OUTPUT);
-
-  // Connessione alla rete WiFi
+  
+  // Connection to the wifi
   connectToWiFi();
 
+  // Seed the random number generator with the microsecond value
   randomSeed(micros());
-  // Connessione al server MQTT
+
+  // Connection to the MQTT broker and set up callback function for incoming messages
   client.setServer(mqttServer, mqttPort);
   client.setCallback(callback);
 }
 
 void loop() {
+  // Check if not connected to the MQTT broker and attempt reconnection
   if (!client.connected()) {
     reconnectMQTT();
   }
+  // Maintain the MQTT connection and handle incoming messages
   client.loop();
 
   readDistance();
