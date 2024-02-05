@@ -5,9 +5,17 @@ import data.DataStore;
 
 import java.util.Objects;
 
+/**
+ * A thread that enables Serial communication on the specified port.
+ */
 public class SerialAgent extends Thread {
     private final String port;
 
+    /**
+     * Create a new SerialAgent.
+     *
+     * @param port the serial port that the Arduino is connected to
+     */
     public SerialAgent(String port) {
         Objects.requireNonNull(port);
         this.port = port;
@@ -15,9 +23,10 @@ public class SerialAgent extends Thread {
 
     public void start() {
         try {
+            // create a new serial communication channel
             SerialCommChannel channel = new SerialCommChannel(port, 9600);
 
-            /* attesa necessaria per fare in modo che Arduino completi il reboot */
+            // wait for the Arduino to reboot after establishing the connection
             System.out.println("[SERIAL] Waiting for Arduino rebooting …");
             Thread.sleep(4000);
             System.out.println("[SERIAL] Ready.");
@@ -34,7 +43,6 @@ public class SerialAgent extends Thread {
                         if (dataStore.getControlState().equals(ControlState.MANUAL)) {
                             int angle = Integer.parseInt(msg.substring(6));
                             dataStore.setValveAngle(angle);
-                            // System.out.println("New valve angle from potentiometer: " + angle);
                         }
                     } else if (msg.equals("AUTOMATIC") && dataStore.getControlState().equals(ControlState.MANUAL)) {
                         // the system switches back to automatic mode due to button press
