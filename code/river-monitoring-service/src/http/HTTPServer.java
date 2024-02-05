@@ -10,8 +10,6 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 
-import java.util.LinkedList;
-
 /**
  * Server for JSON data of the River Monitoring System.
  */
@@ -21,7 +19,6 @@ public class HTTPServer extends AbstractVerticle {
     private DataStore dataStore = DataStore.getInstance();
 
     public HTTPServer(int port) {
-        values = new LinkedList<>();
         this.port = port;
     }
 
