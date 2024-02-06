@@ -3,27 +3,29 @@
 
 #include <Arduino.h>
 
+// Class for representing a button
 class Button {
 public:
-    // Costruttore
+    // Constructor
     Button(int pin);
 
-    // Metodo per inizializzare il pulsante
+    // Method to initialize the button
     void setup();
 
-    // Metodo per aggiornare lo stato del pulsante
+    // Method to update the button state
     void update();
 
-    // Metodo per verificare se il pulsante è premuto
+    // Method to check if the button is pressed
     bool isPressed();
 
-    // Metodo per leggere lo stato del pin del pulsante (HIGH o LOW)
+    // Method to read the state of the button pin (HIGH or LOW)
     int read();
 
 private:
-    int buttonPin;
-    bool lastButtonState;
-    bool buttonState;
+    int buttonPin;          // Pin number of the button
+    bool lastButtonState;   // Previous state of the button
+    bool buttonState;       // Current state of the button
 };
 
 #endif  // BUTTON_H
+

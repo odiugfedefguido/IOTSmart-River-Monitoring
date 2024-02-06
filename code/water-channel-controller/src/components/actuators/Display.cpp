@@ -3,26 +3,32 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+// Create an instance of LiquidCrystal_I2C with the appropriate address and dimensions
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 20, 4);
 
+// Constructor
 Display::Display() {
-  // Eventuali inizializzazioni
+  // Any initializations (if needed)
 }
 
+// Method to set up the display
 void Display::set() {
-  lcd.init();
-  lcd.backlight();
-  lcd.begin(20, 4);  // Inizializza il display con le dimensioni appropriate
+  lcd.init();         // Initialize the LCD
+  lcd.backlight();    // Turn on the backlight
+  lcd.begin(20, 4);   // Initialize the display with the appropriate dimensions
 }
 
+// Method to print values on the display
 void Display::print(int angle, char* state) {
-  lcd.clear();
+  lcd.clear();  // Clear the display
   
-  lcd.setCursor(2, 0); // Imposta il cursore sulla terza colonna e sulla seconda riga.
-  lcd.print("Angle: " + String(angle)); // Stampa il valore del displayValue sull'lcd
+  // Set the cursor position for printing the angle value
+  lcd.setCursor(2, 0);  
+  // Print the angle value on the LCD
+  lcd.print("Angle: " + String(angle));
 
-  lcd.setCursor(2, 1); // Imposta il cursore sulla terza colonna e sulla seconda riga.
-  lcd.print(state); // Stampa il valore del displayValue sull'lcd
+  // Set the cursor position for printing the state value
+  lcd.setCursor(2, 1);
+  // Print the state value on the LCD
+  lcd.print(state);
 }
-
-
